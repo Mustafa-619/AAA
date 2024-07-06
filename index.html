@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Complexity Analysis of Sorting Algorithms</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS for styling -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Time Complexity Analysis of Sorting Algorithms</h1>
+        <div id="legends" class="legend-container">
+            <div class="legend bubble">Bubble Sort</div>
+            <div class="legend merge">Merge Sort</div>
+            <div class="legend selection">Selection Sort</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="input-section">
+                <label for="inputArray">Enter integers separated by commas:</label><br>
+                <textarea id="inputArray" rows="4" cols="50"></textarea><br>
+                <button onclick="runSortingAlgorithms()">Calculate and Plot</button>
+            </div>
+
+            <div class="chart-section">
+                <canvas id="myChart" width="800" height="400"></canvas>
+            </div>
+
+            <div class="result-section">
+                <p id="bubbleSortResult"></p>
+                <p id="mergeSortResult"></p>
+                <p id="selectionSortResult"></p>
+            </div>
+
+            <!-- New team information section -->
+            <div class="team-section">
+                <p>Team Members: Muhammad Umer Farooq and Syed Mustafa Abbas Tirmizi</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script> <!-- JavaScript file for functionality -->
+</body>
+</html>

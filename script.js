@@ -1,29 +1,32 @@
+// Function to parse input string to integer array
+function parseInputArray(inputString) {
+    return inputString.split(',').map(numStr => parseInt(numStr.trim()));
+}
+
+// Bubble Sort implementation
 function bubbleSort(arr) {
     let n = arr.length;
-    let swapped;
     for (let i = 0; i < n - 1; i++) {
-        swapped = false;
-        for (let j = 0; j < n - 1 - i; j++) {
+        for (let j = 0; j < n - i - 1; j++) {
             if (arr[j] > arr[j + 1]) {
-                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-                swapped = true;
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
             }
         }
-        if (!swapped) break;
     }
     return arr;
 }
 
+// Merge Sort implementation
 function mergeSort(arr) {
-    if (arr.length <= 1) {
-        return arr;
-    }
+    if (arr.length <= 1) return arr;
 
     const mid = Math.floor(arr.length / 2);
-    const left = arr.slice(0, mid);
-    const right = arr.slice(mid);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
 
-    return merge(mergeSort(left), mergeSort(right));
+    return merge(left, right);
 }
 
 function merge(left, right) {
@@ -41,10 +44,10 @@ function merge(left, right) {
         }
     }
 
-    // Concatenate any remaining elements in left and right arrays
     return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
 }
 
+// Selection Sort implementation
 function selectionSort(arr) {
     let n = arr.length;
     for (let i = 0; i < n - 1; i++) {
@@ -55,21 +58,49 @@ function selectionSort(arr) {
             }
         }
         if (minIndex !== i) {
-            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+            let temp = arr[i];
+            arr[i] = arr[minIndex];
+            arr[minIndex] = temp;
         }
     }
     return arr;
 }
 
-function plotGraph(bubbleTime, mergeTime, selectionTime) {
-    const ctx = document.getElementById('timeChart').getContext('2d');
-    new Chart(ctx, {
+// Function to measure execution time of sorting algorithms
+function measureTimeComplexity(algorithm, arr) {
+    let start = performance.now();
+    let sortedArr = algorithm(arr.slice()); // Make a copy of the array to avoid modifying the original
+    let end = performance.now();
+    return { time: end - start, sortedArr: sortedArr };
+}
+
+// Function to run sorting algorithms on user input and plot results
+function runSortingAlgorithms() {
+    let inputArray = document.getElementById('inputArray').value;
+    let arr = parseInputArray(inputArray);
+
+    // Measure time complexity for each algorithm
+    let bubbleResult = measureTimeComplexity(bubbleSort, arr);
+    let mergeResult = measureTimeComplexity(mergeSort, arr);
+    let selectionResult = measureTimeComplexity(selectionSort, arr);
+
+    // Display sorted arrays and time taken
+    document.getElementById('bubbleSortResult').textContent = 
+        `Bubble Sort - Time: ${bubbleResult.time.toFixed(2)} ms, Result: ${bubbleResult.sortedArr.join(', ')}`;
+    document.getElementById('mergeSortResult').textContent = 
+        `Merge Sort - Time: ${mergeResult.time.toFixed(2)} ms, Result: ${mergeResult.sortedArr.join(', ')}`;
+    document.getElementById('selectionSortResult').textContent = 
+        `Selection Sort - Time: ${selectionResult.time.toFixed(2)} ms, Result: ${selectionResult.sortedArr.join(', ')}`;
+
+    // Display results using Chart.js
+    let ctx = document.getElementById('myChart').getContext('2d');
+    let myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Bubble Sort', 'Merge Sort', 'Selection Sort'],
             datasets: [{
-                label: 'Time Taken (ns)',
-                data: [bubbleTime, mergeTime, selectionTime],
+                label: 'Time Taken (ms)',
+                data: [bubbleResult.time, mergeResult.time, selectionResult.time],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -84,52 +115,15 @@ function plotGraph(bubbleTime, mergeTime, selectionTime) {
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                y: {
-                    beginAtZero: true
-                }
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
             }
         }
     });
-}
-
-function sortArray() {
-    const input = document.getElementById('arrayInput').value;
-    const array = input.split(',').map(num => parseFloat(num.trim()));
-
-    if (array.some(isNaN)) {
-        document.getElementById('bubbleResult').innerText = "Please enter a valid array of numbers.";
-        document.getElementById('mergeResult').innerText = "";
-        document.getElementById('selectionResult').innerText = "";
-        return;
-    }
-
-    // Bubble Sort
-    let bubbleArray = [...array];
-    let bubbleStart = performance.now();
-    bubbleSort(bubbleArray);
-    let bubbleEnd = performance.now();
-    let bubbleTime = (bubbleEnd - bubbleStart) * 1e6;
-
-    // Merge Sort
-    let mergeArray = [...array];
-    let mergeStart = performance.now();
-    mergeArray = mergeSort(mergeArray);
-    let mergeEnd = performance.now();
-    let mergeTime = (mergeEnd - mergeStart) * 1e6;
-
-    // Selection Sort
-    let selectionArray = [...array];
-    let selectionStart = performance.now();
-    selectionSort(selectionArray);
-    let selectionEnd = performance.now();
-    let selectionTime = (selectionEnd - selectionStart) * 1e6;
-
-    // Display results
-    document.getElementById('bubbleResult').innerText = `Bubble Sort: ${bubbleArray.join(', ')} (Time: ${bubbleTime.toFixed(2)} ns)`;
-    document.getElementById('mergeResult').innerText = `Merge Sort: ${mergeArray.join(', ')} (Time: ${mergeTime.toFixed(2)} ns)`;
-    document.getElementById('selectionResult').innerText = `Selection Sort: ${selectionArray.join(', ')} (Time: ${selectionTime.toFixed(2)} ns)`;
-
-    // Plot the graph
-    plotGraph(bubbleTime, mergeTime, selectionTime);
 }
